@@ -1,7 +1,23 @@
 const admin = require('firebase-admin');
 
-// Initialisation avec le secret GitHub
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+console.log("Démarrage du script...");
+
+if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
+    console.error("ERREUR : Le secret FIREBASE_SERVICE_ACCOUNT est introuvable.");
+    process.exit(1);
+}
+
+try {
+    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+    });
+    console.log("Firebase Admin initialisé avec succès.");
+} catch (e) {
+    console.error("ERREUR lors de l'initialisation (JSON invalide ?) :", e.message);
+    process.exit(1);
+}
+// ... la suite de ton code
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
