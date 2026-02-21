@@ -1,0 +1,21 @@
+name: Rappel Ciné du Samedi
+on:
+  schedule:
+    # 17:00 UTC = 18h00 en France (hiver) ou 19h00 (été)
+    - cron: '0 17 * * 6'
+
+jobs:
+  send_push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Envoyer la notification via API
+        run: |
+          curl -s -X POST "https://api.webpushr.com/v1/notification/send/all" \
+          -H "webpushrKey: TA_CLE_REST_API" \
+          -H "webpushrAuthToken: TON_AUTH_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "title": "CinéNotes 🎬",
+            "message": "C'\''est samedi ! Un film de prévu ? N'\''oublie pas de le noter.",
+            "target_url": "https://clementpsauvage-sketch.github.io/Cin-Notes/"
+          }'

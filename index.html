@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CinéNotes</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <meta name="theme-color" content="#1a1a1a">
+    <link rel="apple-touch-icon" href="web-app-manifest-192x192.png">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🎬 CinéNotes</h1>
+            <nav class="main-nav">
+                <button onclick="showPage('add')" id="btn-nav-add" class="active">Accueil</button>
+                <button onclick="showPage('history')" id="btn-nav-history">📜 Historique</button>
+            </nav>
+        </header>
+
+        <main>
+            <div id="page-add">
+                <section class="card add-section">
+                    <form id="movie-form">
+                        <input type="text" id="movie-title" placeholder="Nom du film..." required>
+                        <button type="submit" id="search-btn">🔍</button>
+                    </form>
+                    
+                    <div id="result-preview" class="result-box hidden">
+                        <p>🎬 <strong id="director-name">...</strong></p>
+                        <button id="save-movie">Ajouter au journal</button>
+                    </div>
+                </section>
+
+                <section class="list-section">
+                    <h2>Films à faire</h2>
+                    <div id="list-container"></div>
+                </section>
+            </div>
+
+            <div id="page-history" class="hidden">
+                <section class="card">
+                    <input type="text" id="search-history" placeholder="Rechercher un film ou un réalisateur..." oninput="renderHistory()">
+                </section>
+                <section class="list-section">
+                    <h2>Films terminés</h2>
+                    <div id="done-container"></div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="app2.js"></script>
+    <script>
+        (function(w,d, s, id) {
+            if(typeof(w.webpushr)!=='undefined') return;
+            w.webpushr=w.webpushr||function(){(w.webpushr.q=w.webpushr.q||[]).push(arguments)};
+            var js, fjs = d.getElementsByTagName(s)[0];
+            js = d.createElement(s); js.id = id;js.async=1;
+            js.src = "https://cdn.webpushr.com/app.min.js";
+            fjs.parentNode.appendChild(js);
+        }(window,document, 'script', 'webpushr-jssdk'));
+        webpushr('setup',{
+            'key':'BHviktxFUOoPm08mZ-YRrdlvRtBOPuWEi2Hk5MTgC66_QF0ctX1Xvr_i0qMhCoK6BSryjlWVjFRbANS74CuA6Yo',
+            'sw': '/Cin-Notes/webpushr-sw.js',
+            'path': '/Cin-Notes/'
+        });
+    </script>
+    </body>
+</html>

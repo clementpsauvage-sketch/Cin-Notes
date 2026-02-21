@@ -1,0 +1,145 @@
+:root {
+    --bg-color: #1a1a1a;
+    --card-bg: #2d2d2d;
+    --accent: #e50914; /* Rouge Cinéma */
+    --text: #ffffff;
+    --text-dim: #b3b3b3;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 { margin: 0; font-size: 2rem; }
+header p { color: var(--text-dim); margin-top: 5px; }
+
+/* Formulaire */
+.card {
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+#movie-form {
+    display: flex;
+    gap: 10px;
+}
+
+input {
+    flex: 1;
+    background: #404040;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+}
+
+button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s;
+}
+
+button:active { transform: scale(0.95); }
+
+/* Aperçu résultat */
+.result-box {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #444;
+    text-align: center;
+}
+
+.hidden { display: none; }
+
+/* Liste de films */
+.movie-item {
+    background: var(--card-bg);
+    margin-top: 12px;
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid var(--accent);
+}
+
+.movie-info h3 { margin: 0; font-size: 1.1rem; }
+.movie-info p { margin: 5px 0 0; color: var(--text-dim); font-size: 0.9rem; }
+
+h2 { font-size: 1.2rem; margin-top: 30px; color: var(--text-dim); }
+
+.movie-item {
+    display: flex;
+    align-items: center; /* Aligne checkbox, texte et bouton sur la même ligne */
+    gap: 10px;
+}
+
+.movie-info {
+    flex: 1; /* Prend tout l'espace restant */
+}
+
+input[type="checkbox"] {
+    accent-color: var(--accent); /* La checkbox devient rouge comme ton thème */
+    cursor: pointer;
+}
+
+/* Navigation */
+.main-nav {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.main-nav button {
+    flex: 1;
+    background: #333;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.main-nav button.active {
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+}
+
+/* Alignement des items de liste */
+.movie-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.movie-info {
+    flex: 1;
+}
+
+/* Recherche historique */
+#search-history {
+    width: 100%;
+    margin-bottom: 5px;
+}

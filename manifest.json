@@ -1,0 +1,24 @@
+{
+    "name": "CinéNotes",
+    "short_name": "CinéNotes",
+    "description": "Mon journal de bord cinéma pour ne plus oublier aucun film.",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#1a1a1a",
+    "theme_color": "#e50914",
+    "orientation": "portrait",
+    "icons": [
+        {
+        "src": "web-app-manifest-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png",
+        "purpose": "any maskable"
+        },
+        {
+        "src": "web-app-manifest-512x512.jpg",
+        "sizes": "512x512",
+        "type": "image/jpeg",
+        "purpose": "any"
+        }
+    ]
+}
