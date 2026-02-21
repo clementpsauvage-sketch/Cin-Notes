@@ -1,0 +1,19 @@
+name: Check Movie Reminders
+on:
+  schedule:
+    - cron: '0 * * * *' # S'exécute toutes les heures pile
+  workflow_dispatch: # Permet de le lancer manuellement pour tester
+
+jobs:
+  check-reminders:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+      - run: npm install firebase-admin
+      - name: Run reminder script
+        run: node reminder.js
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}

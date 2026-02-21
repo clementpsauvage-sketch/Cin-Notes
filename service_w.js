@@ -6,8 +6,7 @@ const ASSETS = [
     './app2.js',
     './manifest.json',
     'web-app-manifest-192x192.png',
-    'web-app-manifest-512x15z2.png',
-    'webpushr-sw.js'
+    'web-app-manifest-512x152.png'
 ];
 
 // Installation : Mise en cache des fichiers

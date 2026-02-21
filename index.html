@@ -53,21 +53,40 @@
     </div>
 
     <script src="config.js"></script>
-    <script src="app2.js"></script>
-    <script>
-        (function(w,d, s, id) {
-            if(typeof(w.webpushr)!=='undefined') return;
-            w.webpushr=w.webpushr||function(){(w.webpushr.q=w.webpushr.q||[]).push(arguments)};
-            var js, fjs = d.getElementsByTagName(s)[0];
-            js = d.createElement(s); js.id = id;js.async=1;
-            js.src = "https://cdn.webpushr.com/app.min.js";
-            fjs.parentNode.appendChild(js);
-        }(window,document, 'script', 'webpushr-jssdk'));
-        webpushr('setup',{
-            'key':'BHviktxFUOoPm08mZ-YRrdlvRtBOPuWEi2Hk5MTgC66_QF0ctX1Xvr_i0qMhCoK6BSryjlWVjFRbANS74CuA6Yo',
-            'sw': '/Cin-Notes/webpushr-sw.js',
-            'path': '/Cin-Notes/'
-        });
+    <script type = "module" src="app2.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDmMzx6MK7GyxQ5GbU6BR2Fdc2hEple-mc",
+            authDomain: "notes-app-zenith-99.firebaseapp.com",
+            projectId: "notes-app-zenith-99",
+            storageBucket: "notes-app-zenith-99.firebasestorage.app",
+            messagingSenderId: "977687759982",
+            appId: "1:977687759982:web:cf6bb4e98326086b482a7f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const messaging = getMessaging(app);
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('firebase-messaging-sw.js')
+                .then((registration) => {
+                    return getToken(messaging, { 
+                        serviceWorkerRegistration: registration,
+                        vapidKey: 'BCtxIqYwzmloUnM1gVkhDa1SpmsGua0y0snDy8O7ZI1CNDl1JXyGdBMSc1f6yMfUo3drFN4ZlsAVapQtpYJbT2E' 
+                    });
+                })
+                .then((token) => {
+                    if (token) {
+                        console.log("Token FCM prêt :", token);
+                        // ON SAUVEGARDE LE TOKEN POUR app2.js
+                        localStorage.setItem('fcm_token', token); 
+                    }
+                })
+                .catch((err) => console.error('Erreur SW/Token:', err));
+        }
     </script>
     </body>
 </html>

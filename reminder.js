@@ -1,0 +1,47 @@
+const admin = require('firebase-admin');
+
+// Initialisation avec le secret GitHub
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
+
+const db = admin.firestore();
+const fcm = admin.messaging();
+
+async function checkAndSend() {
+    const now = Date.now();
+    // On cherche : pas encore envoyé ET l'heure est passée
+    const snapshot = await db.collection('reminders')
+        .where('sent', '==', false)
+        .where('scheduledFor', '<=', now)
+        .get();
+
+    if (snapshot.empty) {
+        console.log('Aucun rappel à envoyer.');
+        return;
+    }
+
+    for (const doc of snapshot.docs) {
+        const data = doc.data();
+        
+        const message = {
+            notification: {
+                title: `Rappel CinéNotes : ${data.movieTitle}`,
+                body: `N'oublie pas d'écrire ton avis sur le film de ${data.director} !`
+            },
+            token: data.userToken
+        };
+
+        try {
+            await fcm.send(message);
+        await doc.ref.update({ sent: true }); // Marquer comme envoyé
+            console.log(`Notification envoyée pour : ${data.movieTitle}`);
+        } catch (error) {
+            console.error(`Erreur pour ${data.movieTitle}:`, error);
+        }
+    }
+}
+
+checkAndSend();
