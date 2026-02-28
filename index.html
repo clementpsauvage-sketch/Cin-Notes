@@ -17,6 +17,7 @@
             <nav class="main-nav">
                 <button onclick="showPage('add')" id="btn-nav-add" class="active">Accueil</button>
                 <button onclick="showPage('history')" id="btn-nav-history">📜 Historique</button>
+                <button id="btn-notif" style="background-color: #444;">🔔 Activer Alertes</button>
             </nav>
         </header>
 
@@ -54,6 +55,7 @@
 
     <script src="config.js"></script>
     <script type = "module" src="app2.js"></script>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
@@ -66,27 +68,38 @@
             messagingSenderId: "977687759982",
             appId: "1:977687759982:web:cf6bb4e98326086b482a7f"
         };
-
         const app = initializeApp(firebaseConfig);
         const messaging = getMessaging(app);
 
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('firebase-messaging-sw.js')
-                .then((registration) => {
-                    return getToken(messaging, { 
+        const notifBtn = document.getElementById('btn-notif');
+
+        notifBtn.addEventListener('click', async () => {
+            if (!('serviceWorker' in navigator)) return;
+
+            try {
+                // Force la demande de permission suite au clic
+                const permission = await Notification.requestPermission();
+                
+                if (permission === 'granted') {
+                    const registration = await navigator.serviceWorker.register('firebase-messaging-sw.js');
+                    const token = await getToken(messaging, { 
                         serviceWorkerRegistration: registration,
                         vapidKey: 'BCtxIqYwzmloUnM1gVkhDa1SpmsGua0y0snDy8O7ZI1CNDl1JXyGdBMSc1f6yMfUo3drFN4ZlsAVapQtpYJbT2E' 
                     });
-                })
-                .then((token) => {
+
                     if (token) {
-                        console.log("Token FCM prêt :", token);
-                        // ON SAUVEGARDE LE TOKEN POUR app2.js
-                        localStorage.setItem('fcm_token', token); 
+                        localStorage.setItem('fcm_token', token);
+                        alert("Notifications activées !");
+                        notifBtn.style.display = 'none'; // On cache le bouton après succès
                     }
-                })
-                .catch((err) => console.error('Erreur SW/Token:', err));
-        }
+                } else {
+                    alert("Vous avez refusé les notifications.");
+                }
+            } catch (err) {
+                console.error('Erreur iOS:', err);
+                alert("Erreur : Assurez-vous d'avoir ajouté l'app à l'écran d'accueil.");
+            }
+        });
     </script>
     </body>
 </html>
