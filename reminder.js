@@ -1,14 +1,12 @@
 const admin = require('firebase-admin');
 
-console.log("Démarrage du script...");
+console.log("Démarrage du script de regroupement...");
 
-// 1. Vérification du secret
 if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
     console.error("ERREUR : Le secret FIREBASE_SERVICE_ACCOUNT est introuvable.");
     process.exit(1);
 }
 
-// 2. Initialisation Globale
 let db, fcm;
 
 try {
@@ -16,61 +14,83 @@ try {
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
     });
-    
     db = admin.firestore();
     fcm = admin.messaging();
-    
-    console.log("Firebase Admin initialisé avec succès.");
 } catch (e) {
     console.error("ERREUR lors de l'initialisation :", e.message);
     process.exit(1);
 }
 
-// 3. Fonction de vérification
 async function checkAndSend() {
     try {
         const now = Date.now();
-        console.log(`Recherche de rappels pour l'heure : ${new Date(now).toLocaleString()}`);
-
         const snapshot = await db.collection('reminders')
             .where('sent', '==', false)
             .where('scheduledFor', '<=', now)
             .get();
 
         if (snapshot.empty) {
-            console.log('Aucun rappel à envoyer pour le moment.');
+            console.log('Aucun rappel à envoyer.');
             return;
         }
 
-        for (const doc of snapshot.docs) {
+        // --- ÉTAPE 1 : REGROUPER PAR TOKEN ---
+        const notificationsGrouped = {};
+
+        snapshot.docs.forEach(doc => {
             const data = doc.data();
+            const token = data.userToken;
+            if (token) {
+                if (!notificationsGrouped[token]) {
+                    notificationsGrouped[token] = {
+                        movies: [],
+                        docRefs: []
+                    };
+                }
+                notificationsGrouped[token].movies.push(data.movieTitle);
+                notificationsGrouped[token].docRefs.push(doc.ref);
+            }
+        });
+
+        // --- ÉTAPE 2 : ENVOYER UNE SEULE NOTIF PAR TOKEN ---
+        for (const token in notificationsGrouped) {
+            const group = notificationsGrouped[token];
+            const count = group.movies.length;
             
-            // On vérifie que le token existe pour ce document
-            if (!data.userToken) {
-                console.log(`Document ${doc.id} ignoré (pas de token FCM).`);
-                continue;
+            let messageTitle = "Rappel CinéNotes";
+            let messageBody = "";
+
+            if (count === 1) {
+                messageTitle = `CinéNotes : ${group.movies[0]}`;
+                messageBody = `N'oublie pas d'écrire ton avis sur ce film !`;
+            } else {
+                messageTitle = `Tu as ${count} films à noter !`;
+                messageBody = group.movies.join(', '); // Liste les titres séparés par une virgule
             }
 
             const message = {
                 notification: {
-                    title: `Rappel CinéNotes : ${data.movieTitle}`,
-                    body: `N'oublie pas d'écrire ton avis sur le film de ${data.director} !`
+                    title: messageTitle,
+                    body: messageBody
                 },
-                token: data.userToken
+                token: token
             };
 
             try {
                 await fcm.send(message);
-                await doc.ref.update({ sent: true });
-                console.log(`✅ Notification envoyée pour : ${data.movieTitle}`);
+                // Marquer tous les documents du groupe comme envoyés
+                const batch = db.batch();
+                group.docRefs.forEach(ref => batch.update(ref, { sent: true }));
+                await batch.commit();
+                
+                console.log(`✅ Notification groupée envoyée (${count} films)`);
             } catch (error) {
-                console.error(`❌ Erreur d'envoi pour ${data.movieTitle}:`, error.message);
+                console.error(`❌ Erreur d'envoi groupé:`, error.message);
             }
         }
     } catch (error) {
-        console.error("Erreur lors de la lecture de la base de données :", error);
+        console.error("Erreur générale :", error);
     }
 }
 
-// Lancement du script
 checkAndSend();
