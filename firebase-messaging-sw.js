@@ -12,11 +12,12 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 // Gère l'affichage quand l'app est en arrière-plan
-messaging.onBackgroundMessage((payload) => {
+messaging.onBackgroundMessage((payload) => {/*
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
         body: payload.notification.body,
         icon: '/web-app-manifest-192x192.png'
     };
-    self.registration.showNotification(notificationTitle, notificationOptions);
+    self.registration.showNotification(notificationTitle, notificationOptions);*/
+    console.log("Message reçu en arrière-plan", payload);
 });
